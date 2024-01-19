@@ -1,0 +1,97 @@
+<html>
+<head>
+    <!-- Include necessary CSS and JS files, e.g., jQuery UI -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<body>
+
+    <form>
+        <textarea id="autocomplete-textarea" class="empresa_input"></textarea>
+        <textarea id="autocomplete-textarea" class="vehiculo_input"></textarea>
+    </form>
+
+    <script>
+		function createAutocomplete (inputSelector, sourceUrl, entity) {
+			$(inputSelector).autocomplete({
+				source: function (request, response) {
+					$.ajax({ url: sourceUrl, dataType: 'json', data: { query: request.term},
+						success: function (data) {
+							responseData = entity.onAjaxSuccess (data)
+							response (responseData)
+						}
+					});
+				},
+				minLength: 2, 
+				select: function (event, ui) {
+					entity.onItemSelected (ui)
+					// Prevent the default behavior of filling the input with the selected value
+					return false;
+				}
+			});
+		}
+		
+		// Create autocomplet for entities
+		$(document).ready(function () {
+			createAutocomplete(".empresa_input", '/creador/get-options/', autoCompleteEmpresa)
+			createAutocomplete(".vehiculo_input", '/creador/get-options/', autoCompleteEmpresa2)
+		});
+
+		// Autocomplete for Empresa inputs
+		let autoCompleteEmpresa = {
+			fullData : null,
+
+			// When ajax query was succesfull
+			onAjaxSuccess : function (data) {
+				autoCompleteEmpresa.fullData = data;
+				let flatData = [];
+				for (let i=0; i < data.length; i++) {
+					flatData.push ((i+1) + ". " + data[i] ["nombre"])
+				}
+				return flatData;
+			},
+
+			// When an item is selected,  populate the textarea 
+			onItemSelected : function (ui) {
+				let index = ui.item.value.split (".")[0]
+				let item = autoCompleteEmpresa.fullData [index-1]
+				
+				text = item ["nombre"] + "\n" + item ["direccion"] + "\n" +
+					   item ["ciudad"] + "-"  + item ["pais"] + "\n" + 
+					   item ["tipoId"] + ":"  + item ["numeroId"]
+
+				$(".empresa_input").val (text);
+			}
+		};
+
+		let autoCompleteEmpresa2 = {
+			fullData : null,
+
+			onAjaxSuccess : function (data) {
+				console.log (">>> data: ", data)
+				autoCompleteEmpresa2.fullData = data;
+				let flatData = [];
+				for (let i=0; i < data.length; i++) {
+					flatData.push ((i+1) + ". " + data[i] ["direccion"])
+				}
+				return flatData;
+			},
+
+			onItemSelected : function (ui) {
+				// When an item is selected,  populate the textarea 
+				let index = ui.item.value.split (".")[0]
+				let item = autoCompleteEmpresa2.fullData [index-1]
+				
+				text = item ["nombre"] + "\n" + item ["numeroId"]; 
+
+				$(".vehiculo_input").val (text);
+			}
+		};
+
+
+    </script>
+
+</body>
+</html>
+

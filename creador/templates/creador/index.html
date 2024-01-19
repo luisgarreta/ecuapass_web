@@ -1,0 +1,9 @@
+{% if lista_ultimos_documentos %}
+    <ul>
+    {% for doc in lista_ultimos_documentos %}
+        <li><a href="{% url 'creador:detalle' doc.numero %}">{{ doc.destinatario }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay documentos disponibles.</p>
+{% endif %}
