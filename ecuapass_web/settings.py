@@ -22,6 +22,8 @@ STATIC_URL       = '/static/'
 STATIC_ROOT      = os.path.join (BASE_DIR, 'staticfiles')  # Example path
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'creador/static')]
 
+# Disable Django's built-in static file handling in favor of Whitenoise
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,7 +33,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'creador/static')]
 SECRET_KEY = 'django-insecure-cczhgbp2b=v=4lpq*728wssns(1v0bf$9c5v)f*%b6e3cfhi^o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
