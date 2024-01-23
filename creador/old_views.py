@@ -10,10 +10,6 @@ from django.views import View
 from django.templatetags.static import static        # For URL of static files
 from django.conf import settings  # For load static settings
 
-# For CSRF protection
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect
-
 # Own imports
 from ecuapassdocs.ecuapassutils.resourceloader import ResourceLoader 
 from ecuapassdocs.ecuapassutils.pdfcreator import CreadorPDF 
@@ -48,7 +44,7 @@ class CartaporteView (View):
 	#-------------------------------------------------------------------
 	# Used to receive a filled cartaporte form and create a response
 	#-------------------------------------------------------------------
-	@method_decorator(csrf_protect)
+	@csrf_protect
 	def post (self, request, *args, **kargs):
 		# Get values from html form
 		button_type = request.POST.get('boton_pdf', '').lower()
@@ -192,7 +188,7 @@ from django.db.models import Q
 from .models import Empresa
 
 class EmpresaOptionsView (View):
-	@method_decorator(csrf_protect)
+	@csrf_protect
 	def get (self, request, *args, **kwargs):
 		query = request.GET.get('query', '')
 		options = Empresa.objects.filter (nombre__icontains=query).values()
