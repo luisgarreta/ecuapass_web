@@ -6,6 +6,8 @@ ecuapassdocs==0.1
 gunicorn==21.2.0
 packaging==23.2
 Pillow==10.1.0
+psycopg==3.1.17
+psycopg-binary==3.1.17
 PyPDF2==3.0.1
 reportlab==4.0.8
 sqlparse==0.4.4

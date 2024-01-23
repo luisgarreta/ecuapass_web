@@ -18,9 +18,9 @@ import os.path
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-STATIC_URL       = '/static/'
+STATIC_URL       = '/staticfiles/'
 STATIC_ROOT      = os.path.join (BASE_DIR, 'staticfiles')  # Example path
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'creador/static')]
+#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'creador/static')]
 
 # Disable Django's built-in static file handling in favor of Whitenoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -31,6 +31,10 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-cczhgbp2b=v=4lpq*728wssns(1v0bf$9c5v)f*%b6e3cfhi^o'
+
+# Added djang CORS policy
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -87,10 +91,22 @@ WSGI_APPLICATION = 'ecuapass_web.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ecuapassdocsdb',
+        'USER': 'lg',
+        'PASSWORD': 'lge',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
 
 
 # Password validation
