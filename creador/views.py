@@ -14,7 +14,7 @@ from django.conf import settings  # For load static settings
 from ecuapassdocs.ecuapassutils.resourceloader import ResourceLoader 
 from ecuapassdocs.ecuapassutils.pdfcreator import CreadorPDF 
 from .models import CartaporteDoc, Cartaporte
-from .views_options import EmpresaOptionsView # For combo box options ini form input fields 
+#from .views_options import EmpresaOptionsView # For combo box options ini form input fields 
 
 #
 # Create your views here.
@@ -175,4 +175,37 @@ class CartaporteView (View):
 
 		jsonFieldsDic [tableName] = gastosDic
 		return jsonFieldsDic
+
+
+
+#--------------------------------------------------------------------
+#-- Class for autocomplete options while the user is typing
+#--------------------------------------------------------------------
+# For textarea options
+from django.db.models import Q
+#from dal import autocomplete
+
+from .models import Empresa
+
+class EmpresaOptionsView (View):
+	@csrf_protect
+	def get (self, request, *args, **kwargs):
+		query = request.GET.get('query', '')
+		options = Empresa.objects.filter (nombre__icontains=query).values()
+
+		itemOptions = []
+		for i, option in enumerate (options):
+			itemLine = f"{i}. {option['nombre']}"
+			itemText = "%s\n%s\n%s-%s. %s:%s" % (
+			              option["nombre"], option ["direccion"], 
+						  option ["ciudad"], option ["pais"],
+						  option ["tipoId"], option ["numeroId"])
+
+			newOption = {"itemLine" : itemLine, "itemText" : itemText}
+			itemOptions.append (newOption)
+		
+
+		return JsonResponse (itemOptions, safe=False)
+
+
 
