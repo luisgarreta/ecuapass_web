@@ -34,7 +34,7 @@ SECRET_KEY = 'django-insecure-cczhgbp2b=v=4lpq*728wssns(1v0bf$9c5v)f*%b6e3cfhi^o
 
 # Added djang CORS policy
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
-CSRF_TRUSTED_ORIGINS = [‘https://*.railway.app’]  # To fix CSRF django validation
+CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]  # To fix CSRF django validation
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
