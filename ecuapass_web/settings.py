@@ -94,13 +94,24 @@ WSGI_APPLICATION = 'ecuapass_web.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '<PGDATABASE>',
-        'USER': '<PGUSER>',
-        'PASSWORD': '<PGPASSWORD>',
-        'HOST': '<PGHOST>',
-        'PORT': '<PGPORT>',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'Fbd**DdC1d-aC*e4f2cg*CDA4E43b4fC',
+        'HOST': 'monorail.proxy.rlwy.net',
+        'PORT': '54626',
     }
 }
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': '<PGDATABASE>',
+#        'USER': '<PGUSER>',
+#        'PASSWORD': '<PGPASSWORD>',
+#        'HOST': '<PGHOST>',
+#        'PORT': '<PGPORT>',
+#    }
+#}
 
 # Local postgress database
 #DATABASES = {
