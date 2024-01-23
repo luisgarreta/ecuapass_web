@@ -34,7 +34,7 @@ SECRET_KEY = 'django-insecure-cczhgbp2b=v=4lpq*728wssns(1v0bf$9c5v)f*%b6e3cfhi^o
 
 # Added djang CORS policy
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
-CSRF_TRUSTED_ORIGINS = ["https://*.railway.app","https://127.0.0.1"]  # To fix CSRF django validation
+CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]  # To fix CSRF django validation
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -90,29 +90,16 @@ WSGI_APPLICATION = 'ecuapass_web.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# Remote railway database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ['PGDATABASE'],
-        'USER': os.environ['PGUSER'],
-        'PASSWORD': os.environ['PGPASSWORD'],
-        'HOST': os.environ['PGHOST'],
-        'PORT': os.environ['PGPORT'],
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ecuapassdocsdb',
+        'USER': 'lg',
+        'PASSWORD': 'lge',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
-
-# Local postgress database
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'ecuapassdocsdb',
-#        'USER': 'lg',
-#        'PASSWORD': 'lge',
-#        'HOST': 'localhost',
-#        'PORT': '5432',
-#    }
-#}
 
 
 #DATABASES = {
