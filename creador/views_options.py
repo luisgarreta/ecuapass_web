@@ -10,6 +10,7 @@ from .models import Empresa
 
 #-- Class for autocomplete options while the user is typing
 class EmpresaOptionsView (View):
+	@csrf_protect
 	def get (self, request, *args, **kwargs):
 		query = request.GET.get('query', '')
 		options = Empresa.objects.filter (nombre__icontains=query).values()

@@ -44,6 +44,7 @@ class CartaporteView (View):
 	#-------------------------------------------------------------------
 	# Used to receive a filled cartaporte form and create a response
 	#-------------------------------------------------------------------
+	@csrf_protect
 	def post (self, request, *args, **kargs):
 		# Get values from html form
 		button_type = request.POST.get('boton_pdf', '').lower()

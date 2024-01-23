@@ -300,6 +300,12 @@
 					type: 'POST',
 					url: $(this).attr('action'),
 					data: formData,
+
+					 beforeSend: function (xhr, settings) {
+					 	// Include the CSRF token in the request headers
+					 	xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+					 },
+
 					success: function (data) { // Handle the response from the server
 						let input = document.getElementById("txt00")
 						if (submitterButton.includes ("preliminar")){
@@ -340,6 +346,12 @@
 			$(inputSelector).autocomplete({
 				source: function (request, response) {
 					$.ajax({ url: sourceUrl, dataType: 'json', data: { query: request.term},
+
+						beforeSend: function (xhr, settings) {
+							// Include the CSRF token in the request headers
+							xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+						},
+
 						success: function (data) {
 							responseData = entity.onAjaxSuccess (data)
 							response (responseData)
