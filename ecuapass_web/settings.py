@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os.path
+import os, os.path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
@@ -91,27 +91,27 @@ WSGI_APPLICATION = 'ecuapass_web.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 # Remote railway database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'Fbd**DdC1d-aC*e4f2cg*CDA4E43b4fC',
-        'HOST': 'monorail.proxy.rlwy.net',
-        'PORT': '54626',
-    }
-}
-
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': '<PGDATABASE>',
-#        'USER': '<PGUSER>',
-#        'PASSWORD': '<PGPASSWORD>',
-#        'HOST': '<PGHOST>',
-#        'PORT': '<PGPORT>',
+#        'NAME': 'railway',
+#        'USER': 'postgres',
+#        'PASSWORD': 'Fbd**DdC1d-aC*e4f2cg*CDA4E43b4fC',
+#        'HOST': 'monorail.proxy.rlwy.net',
+#        'PORT': '54626',
 #    }
 #}
+
+DATABASES = {
+    'default': {
+        'ENGINE'  : 'django.db.backends.postgresql_psycopg2',
+        'NAME'    : os.environ.get ('PGDATABASE'),
+        'USER'    : os.environ.get ('PGUSER'),
+        'PASSWORD': os.environ.get ('PGPASSWORD'),
+        'HOST'    : os.environ.get ('PGHOST'),
+        'PORT'    : os.environ.get ('PGPORT'),
+    }
+}
 
 # Local postgress database
 #DATABASES = {
