@@ -6,21 +6,13 @@ from django.db import models
 from ecuapassdocs.ecuapassinfo.ecuapass_utils import Utils
 from ecuapassdocs.ecuapassinfo.ecuapass_info_cartaporte_BYZA import CartaporteByza
 
-class TestDB2 (models.Model):
-	nombre         = models.CharField (max_length=50)
-	direccion     = models.CharField (max_length=100)
-
-class TestDB (models.Model):
-	nombre         = models.CharField (max_length=50)
-	direccion     = models.CharField (max_length=100)
-
 class Empresa (models.Model):
-	nombre         = models.CharField (max_length=50)
-	direccion     = models.CharField (max_length=100)
-	ciudad         = models.CharField (max_length=50)
-	pais           = models.CharField (max_length=20)
-	tipoId         = models.CharField (max_length=20)
-	numeroId       = models.CharField (max_length=50)
+	numeroId     = models.CharField (max_length=50)
+	nombre       = models.CharField (max_length=50)
+	direccion    = models.CharField (max_length=100)
+	ciudad       = models.CharField (max_length=50)
+	pais         = models.CharField (max_length=20)
+	tipoId       = models.CharField (max_length=20)
 
 	def __str__ (self):
 		return f"{self.id}, {self.nombre} {self.numeroId}"

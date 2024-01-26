@@ -180,7 +180,7 @@
 		"fontSize": "14px",
 		"align": "left",
 		"field": "13_Conductor_Nombre",
-		"class": "input_general"
+		"class": "input_conductor"
 	},
 	"txt14": {
 		"x": 45,
@@ -245,7 +245,7 @@
 		"fontSize": "14px",
 		"align": "left",
 		"field": "18_Auxiliar_Nombre",
-		"class": "input_general"
+		"class": "input_conductor"
 	},
 	"txt19": {
 		"x": 528,

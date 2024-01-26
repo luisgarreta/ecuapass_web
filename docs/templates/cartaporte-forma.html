@@ -43,7 +43,7 @@
         }
 
         #background {
-            background-image: url('{% static "creador/images/image-cartaporte-vacia-SILOG.png" %}');
+            background-image: url('{% static "docs/images/image-cartaporte-vacia-SILOG.png" %}');
             #background-size: 1699px 2200px; /* Tamaño fijo de la imagen de fondo */
             #background-size: cover; /* Adjust as needed */
             background-repeat: no-repeat;
@@ -147,7 +147,7 @@
 </head>
 <body>
 	<div id="background"></div>
-		<form action="{% url 'creador:cartaporte' %}" method="post" id="forma_pdf" target="_blank">
+		<form action="{% url 'docs:cartaporte' %}" method="post" id="forma_pdf" target="_blank">
 			<div class="container">
 				{% csrf_token %}
 				<!-- Panel superior que muestra cuatro opciones para realizar con el documento -->
@@ -228,7 +228,7 @@
 		//-------------------------------------------------------------
 		// Get input parameters from server and apply to form inputs
 		//-------------------------------------------------------------
-		let inputsParameters = {{ input_params|safe }};
+		let inputsParameters = {{ input_parameters|safe }};
 
 		window.jsPDF = window.jspdf.jsPDF;
 		let pdf = new jsPDF();
@@ -242,12 +242,18 @@
 		// Set restrictions and styles for each input textarea
 		const textAreas = document.querySelectorAll ("textarea");
 		textAreas.forEach (function (textArea) {
-			const className = textArea.className;
-			input = inputsParameters [className]
+			const input = inputsParameters [textArea.id];
 			textArea.style.fontSize  = input["fontSize"];
-			textArea.style.textAlign = "align" in input ? input["align"] : "left"
+			textArea.style.textAlign = input["align"];
 			textArea.style.position = "absolute";
 			textArea.addEventListener ('input', handleInput);
+
+		//	const className = textArea.className;
+		//	input = inputsParameters [className]
+		//	textArea.style.fontSize  = input["fontSize"];
+		//	textArea.style.textAlign = "align" in input ? input["align"] : "left"
+		//	textArea.style.position = "absolute";
+		//	textArea.addEventListener ('input', handleInput);
 		});
 
 		// Control max number of lines and chars according to className
@@ -255,12 +261,14 @@
 			textArea = event.target;
 			convertToUpperCase (textArea);
 
-			const allClasses = textArea.className.split(" ");
-			const inputClass = allClasses.filter (str => str.startsWith ("input_"))
-			const className = inputClass [0]
-			MAXLINES = inputsParameters [className]["maxLines"];
-			MAXCHARS = inputsParameters [className]["maxChars"] * 3.2;
-			FONTSIZE = inputsParameters [className]["fontSize"];
+			MAXLINES = inputsParameters [textArea.id]["maxLines"];
+			MAXCHARS = inputsParameters [textArea.id]["maxChars"] * 3.2;
+//			const allClasses = textArea.className.split(" ");
+//			const inputClass = allClasses.filter (str => str.startsWith ("input_"))
+//			const className = inputClass [0]
+//			MAXLINES = inputsParameters [className]["maxLines"];
+//			MAXCHARS = inputsParameters [className]["maxChars"] * 3.2;
+//			FONTSIZE = inputsParameters [className]["fontSize"];
 
 			// Control maximum number of chars
 			lines = pdf.splitTextToSize (textArea.value, MAXCHARS);
@@ -372,7 +380,7 @@
 			constructor (inputSelector) {
 				let inputId = "#" + inputSelector
 				this.inputSelector = inputSelector;
-				this.sourceUrl     = "/opciones-empresa/"
+				this.sourceUrl     = "opciones-empresa/"
 				this.fullData = null;
 			}
 

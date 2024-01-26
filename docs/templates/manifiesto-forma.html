@@ -43,7 +43,7 @@
         }
 
         #background {
-            background-image: url('{% static "manifiesto/images/image-manifiesto-vacio-NTA.png" %}');
+            background-image: url('{% static "docs/images/image-manifiesto-vacio-NTA.png" %}');
             #background-size: 1699px 2200px; /* Tamaño fijo de la imagen de fondo */
             #background-size: cover; /* Adjust as needed */
             background-repeat: no-repeat;
@@ -158,7 +158,7 @@
 </head>
 <body>
 	<div id="background"></div>
-		<form action="{% url 'manifiesto:manifiesto' %}" method="post" id="forma_pdf" target="_blank">
+		<form action="{% url 'docs:manifiesto' %}" method="post" id="forma_pdf" target="_blank">
 			<div class="container">
 				{% csrf_token %}
 				<!-- Panel superior que muestra cuatro opciones para realizar con el documento -->
@@ -184,12 +184,12 @@
 				<textarea name="txt10" id="txt10" class="input_general"></textarea>
 				<textarea name="txt11" id="txt11" class="input_placaPais"></textarea>
 				<textarea name="txt12" id="txt12" class="input_general"></textarea>
-				<textarea name="txt13" id="txt13" class="input_general"></textarea>
+				<textarea name="txt13" id="txt13" class="input_conductor"></textarea>
 				<textarea name="txt14" id="txt14" class="input_general"></textarea>
 				<textarea name="txt15" id="txt15" class="input_general"></textarea>
 				<textarea name="txt16" id="txt16" class="input_general"></textarea>
 				<textarea name="txt17" id="txt17" class="input_general"></textarea>
-				<textarea name="txt18" id="txt18" class="input_general"></textarea>
+				<textarea name="txt18" id="txt18" class="input_conductor"></textarea>
 				<textarea name="txt19" id="txt19" class="input_general"></textarea>
 				<textarea name="txt20" id="txt20" class="input_general"></textarea>
 				<textarea name="txt21" id="txt21" class="input_general"></textarea>
@@ -334,9 +334,12 @@
 
 			// Scripts for autocomplete options in input fields
 			vehiculoInputs = getTextAreasByClassName ("input_placaPais")
-			console.log (">>> vehiculoInputs:", vehiculoInputs);
 			vehiculoInputs.forEach (inputName => {
 				createAutocomplete(new AutoCompletePlacaPais (inputName)) 
+			});
+			conductorInputs = getTextAreasByClassName ("input_conductor")
+			conductorInputs.forEach (inputName => {
+				createAutocomplete(new AutoCompleteConductor (inputName)) 
 			});
 		});
 
@@ -369,13 +372,13 @@
 			});
 		}
 
-		// Autocomplete class for Empresa inputs
+		// Autocomplete class for Vehiculo inputs
 		class AutoCompletePlacaPais {
 			constructor (inputSelector) {
-				let inputId = "#" + inputSelector
+				let inputId        = "#" + inputSelector
 				this.inputSelector = inputSelector;
 				this.sourceUrl     = "opciones-vehiculo/"
-				this.fullData = null;
+				this.fullData      = null;
 			}
 
 			// When ajax query is succesfull, set items
@@ -394,7 +397,6 @@
 				let text = this.fullData [index]["itemText"]
 				let values = text.split ("||");
 				let input = this.inputSelector
-				console.log ("input: ", input)
 				if (input.id === "txt06") {
 					document.getElementById("txt04").value = values [0]
 					document.getElementById("txt05").value = values [1]
@@ -409,9 +411,49 @@
 			}
 		}
 
+		// Autocomplete class for Conductor inputs
+		class AutoCompleteConductor {
+			constructor (inputSelector) {
+				let inputId        = "#" + inputSelector
+				this.inputSelector = inputSelector;
+				this.sourceUrl     = "opciones-conductor/"
+				this.fullData      = null;
+			}
+
+			// When ajax query is succesfull, set items
+			onAjaxSuccess (data) {
+				this.fullData = data;
+				let flatData = [];
+				for (let i=0; i < data.length; i++) {
+					flatData.push (data[i] ["itemLine"])
+				}
+				return flatData;
+			}
+
+			// When an item is selected, populate the textarea 
+			onItemSelected (ui) {
+				let index = ui.item.value.split (".")[0]
+				let text = this.fullData [index]["itemText"]
+				let values = text.split ("||");
+				let input = this.inputSelector
+				if (input.id === "txt13") {
+					document.getElementById("txt13").value = values [0]
+					document.getElementById("txt14").value = values [1]
+					document.getElementById("txt15").value = values [2]
+					document.getElementById("txt16").value = values [3]
+					document.getElementById("txt17").value = values [4]
+				}else {
+					document.getElementById("txt18").value = values [0]
+					document.getElementById("txt19").value = values [1]
+					document.getElementById("txt20").value = values [2]
+					document.getElementById("txt21").value = values [3]
+					document.getElementById("txt22").value = values [4]
+				}
+			}
+		}
+
 		// Return array of selected textAreas according to className
 		function getTextAreasByClassName (className) {
-			console.log (className)
 			let selectedTextAreas = []
 			textAreas.forEach (textArea => {
 				if (textArea.className.includes (className)) {
@@ -420,7 +462,6 @@
 			});
 			return (selectedTextAreas);
 		}
-
 
 </script>
 </body>

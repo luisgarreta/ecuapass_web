@@ -34,7 +34,7 @@ SECRET_KEY = 'django-insecure-cczhgbp2b=v=4lpq*728wssns(1v0bf$9c5v)f*%b6e3cfhi^o
 
 # Added djang CORS policy
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
-CSRF_TRUSTED_ORIGINS = ["https://*.railway.app","https://127.0.0.1"]  # To fix CSRF django validation
+CSRF_TRUSTED_ORIGINS = ["https://*.railway.app","https://127.0.0.1", "https://192.168.1.91"]  # To fix CSRF django validation
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -46,8 +46,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-	'manifiesto.apps.ManifiestoConfig',
-	'creador.apps.CreadorConfig',
+	'docs.apps.DocsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

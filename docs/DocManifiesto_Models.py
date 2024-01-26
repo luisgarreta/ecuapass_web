@@ -6,10 +6,22 @@ from django.db import models
 from ecuapassdocs.ecuapassinfo.ecuapass_utils import Utils
 from ecuapassdocs.ecuapassinfo.ecuapass_info_manifiesto_BYZA import ManifiestoByza
 
+class Conductor (models.Model):
+	documento        = models.CharField (max_length=20)
+	nombre           = models.CharField (max_length=50)
+	nacionalidad     = models.CharField (max_length=50)
+	licencia         = models.CharField (max_length=50)
+	fecha_nacimiento = models.CharField (max_length=50)
+
+	class Meta:
+		verbose_name_plural = "Conductores"
+
+	def __str__ (self):
+		return f"{self.nombre}"
 
 class Vehiculo (models.Model):
-	marca       = models.CharField (max_length=100)
 	placa       = models.CharField (max_length=50)
+	marca       = models.CharField (max_length=100)
 	pais        = models.CharField (max_length=20)
 	chasis      = models.CharField (max_length=50)
 	anho        = models.CharField (max_length=20)
@@ -78,12 +90,10 @@ class ManifiestoDoc (models.Model):
 		numero = f"CO{numero}"
 		return (self.numero)
 		
-# Create your models here.
 class Manifiesto (models.Model):
 	numero     = models.CharField (max_length=20)
 	vehiculo   = models.ForeignKey (Vehiculo, on_delete=models.DO_NOTHING, related_name='vehiculo', null=True)
 	remolque   = models.ForeignKey (Vehiculo, on_delete=models.DO_NOTHING, related_name='remolque', null=True)
-	#remolque   = models.CharField (max_length=20)
 	documento  = models.OneToOneField (ManifiestoDoc, on_delete=models.DO_NOTHING)
 	fecha_emision = models.DateField (default=date.today)
 
