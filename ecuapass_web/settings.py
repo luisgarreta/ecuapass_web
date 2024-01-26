@@ -46,6 +46,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+	'manifiesto.apps.ManifiestoConfig',
 	'creador.apps.CreadorConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -93,37 +94,26 @@ WSGI_APPLICATION = 'ecuapass_web.wsgi.application'
 # Remote railway database
 #DATABASES = {
 #    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'railway',
-#        'USER': 'postgres',
-#        'PASSWORD': 'Fbd**DdC1d-aC*e4f2cg*CDA4E43b4fC',
-#        'HOST': 'monorail.proxy.rlwy.net',
-#        'PORT': '54626',
+#        'ENGINE'  : 'django.db.backends.postgresql_psycopg2',
+#        'NAME'    : os.environ.get ('PGDATABASE'),
+#        'USER'    : os.environ.get ('PGUSER'),
+#        'PASSWORD': os.environ.get ('PGPASSWORD'),
+#        'HOST'    : os.environ.get ('PGHOST'),
+#        'PORT'    : os.environ.get ('PGPORT'),
 #    }
 #}
 
+# Local postgress database
 DATABASES = {
     'default': {
         'ENGINE'  : 'django.db.backends.postgresql_psycopg2',
-        'NAME'    : os.environ.get ('PGDATABASE'),
-        'USER'    : os.environ.get ('PGUSER'),
-        'PASSWORD': os.environ.get ('PGPASSWORD'),
-        'HOST'    : os.environ.get ('PGHOST'),
-        'PORT'    : os.environ.get ('PGPORT'),
+        'NAME': 'ecuapassdocsdb',
+        'USER': 'lg',
+        'PASSWORD': 'lge',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
-
-# Local postgress database
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'ecuapassdocsdb',
-#        'USER': 'lg',
-#        'PASSWORD': 'lge',
-#        'HOST': 'localhost',
-#        'PORT': '5432',
-#    }
-#}
 
 
 #DATABASES = {

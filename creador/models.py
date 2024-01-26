@@ -6,6 +6,14 @@ from django.db import models
 from ecuapassdocs.ecuapassinfo.ecuapass_utils import Utils
 from ecuapassdocs.ecuapassinfo.ecuapass_info_cartaporte_BYZA import CartaporteByza
 
+class TestDB2 (models.Model):
+	nombre         = models.CharField (max_length=50)
+	direccion     = models.CharField (max_length=100)
+
+class TestDB (models.Model):
+	nombre         = models.CharField (max_length=50)
+	direccion     = models.CharField (max_length=100)
+
 class Empresa (models.Model):
 	nombre         = models.CharField (max_length=50)
 	direccion     = models.CharField (max_length=100)

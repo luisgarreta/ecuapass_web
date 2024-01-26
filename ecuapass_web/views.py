@@ -10,9 +10,6 @@ from django.views import View
 from django.templatetags.static import static        # For URL of static files
 from django.conf import settings  # For load static settings
 
-#
-# Create your views here.
-#
 def index (request):
-	return (render (request, "ecuapass_web/index.html", {}))
+	return (render (request, "creador/index.html", {}))
 	

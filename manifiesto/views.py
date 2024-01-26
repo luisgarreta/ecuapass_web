@@ -5,8 +5,9 @@ from os.path import join
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
 from django.views import View
+
+
 from django.templatetags.static import static        # For URL of static files
 from django.conf import settings  # For load static settings
 
@@ -17,35 +18,31 @@ from django.views.decorators.csrf import csrf_protect
 # Own imports
 from ecuapassdocs.ecuapassutils.resourceloader import ResourceLoader 
 from ecuapassdocs.ecuapassutils.pdfcreator import CreadorPDF 
-from .models import CartaporteDoc, Cartaporte
+from .models import ManifiestoDoc, Manifiesto
 
-#
-# Create your views here.
-#
 def index (request):
 	return (render (request, "creador/index.html", {}))
-	
 #--------------------------------------------------------------------
-#-- Clase para manejar las solicitudes de cartaporte
+#-- Vista para manejar las solicitudes de manifiesto
 #--------------------------------------------------------------------
-class CartaporteView (View):
-	cartaporteDoc = None
-	template_name = "creador/cartaporte-forma.html"
+class ManifiestoView (View):
+	manifiestoDoc = None
+	template_name = "manifiesto-forma.html"
 
 	#-------------------------------------------------------------------
-	# Usado para llenar una forma (cartaporte) vacia
+	# Usado para llenar una forma (manifiesto) vacia
 	# Envía los parámetros o restricciones para cada campo en la forma de HTML
 	#-------------------------------------------------------------------
 	def get (self, request, *args, **kargs):
 		# Load parameters from package
-		cartaporteParametersForFields = ResourceLoader.loadJson ("form-cartaporte", "cartaporte_parameters_for_fields.json")
+		manifiestoParametersForFields = ResourceLoader.loadJson ("docs", "manifiesto_input_parameters.json")
 		# Send input fields parameters (bounds, maxLines, maxChars, ...)
-		contextDic = {"input_params" : cartaporteParametersForFields}
+		contextDic = {"input_parameters" : manifiestoParametersForFields}
 
-		return render (request, "creador/cartaporte-forma.html", contextDic)
+		return render (request, "manifiesto-forma.html", contextDic)
 	
 	#-------------------------------------------------------------------
-	# Used to receive a filled cartaporte form and create a response
+	# Used to receive a filled manifiesto form and create a response
 	#-------------------------------------------------------------------
 	@method_decorator(csrf_protect)
 	def post (self, request, *args, **kargs):
@@ -83,43 +80,43 @@ class CartaporteView (View):
 			return JsonResponse(response_data, safe=False)
 				
 	#-------------------------------------------------------------------
-	#-- Guarda los campos del documento cartaporte (incluye numero) a la BD
+	#-- Guarda los campos del documento manifiesto (incluye numero) a la BD
 	#-------------------------------------------------------------------
 	def saveDocumentToDB (self, inputValues, fieldValues, flagSave):
-		# Create cartaporteDoc and save it to get id
+		# Create manifiestoDoc and save it to get id
 		if flagSave == "GET-ID":
-			# Save Cartaporte document
-			cartaporteDoc = CartaporteDoc ()
-			cartaporteDoc.save ()
-			cartaporteDoc.numero = self.getCartaporteNumber (cartaporteDoc.id)
-			cartaporteDoc.save ()
+			# Save Manifiesto document
+			manifiestoDoc = ManifiestoDoc ()
+			manifiestoDoc.save ()
+			manifiestoDoc.numero = self.getManifiestoNumber (manifiestoDoc.id)
+			manifiestoDoc.save ()
 
-			# Save Cartaporte register
-			cartaporteReg = Cartaporte ()
-			cartaporteReg.setValues (cartaporteDoc, fieldValues)
-			cartaporteReg.save ()
+			# Save Manifiesto register
+			manifiestoReg = Manifiesto ()
+			manifiestoReg.setValues (manifiestoDoc, fieldValues)
+			manifiestoReg.save ()
 
-			return cartaporteDoc.numero
+			return manifiestoDoc.numero
 		elif flagSave == "SAVE-DATA":
-			# Retrieve instance and save Cartaporte document
+			# Retrieve instance and save Manifiesto document
 			docNumber = inputValues ["txt00"]
-			cartaporteDoc = get_object_or_404 (CartaporteDoc, numero=docNumber)
+			manifiestoDoc = get_object_or_404 (ManifiestoDoc, numero=docNumber)
 
 			# Assign values to the attributes using dictionary keys
 			for key, value in inputValues.items():
-				setattr(cartaporteDoc, key, value)
+				setattr(manifiestoDoc, key, value)
 
-			cartaporteDoc.save ()
+			manifiestoDoc.save ()
 
-			# Retrieve and save Cartaporte register
-			cartaporteReg = get_object_or_404 (Cartaporte, numero=docNumber)
-			cartaporteReg.setValues (cartaporteDoc, fieldValues)
-			cartaporteReg.save ()
+			# Retrieve and save Manifiesto register
+			manifiestoReg = get_object_or_404 (Manifiesto, numero=docNumber)
+			manifiestoReg.setValues (manifiestoDoc, fieldValues)
+			manifiestoReg.save ()
 
 			return inputValues
 
-	#-- Create a formated cartaporte number ranging from 2000000 
-	def getCartaporteNumber (self, id):
+	#-- Create a formated manifiesto number ranging from 2000000 
+	def getManifiestoNumber (self, id):
 		numero = f"CO{2000000 + id}"
 		return (numero)
 		
@@ -127,10 +124,10 @@ class CartaporteView (View):
 	#-- Create a PDF from document
 	#-------------------------------------------------------------------
 	def createPDF (self, inputValues, button_type):
-		creadorPDF = CreadorPDF ("cartaporte")
+		creadorPDF = CreadorPDF ("manifiesto")
 
 		print (">>> createPDF: txt00:", inputValues ["txt00"])
-		outPdfPath, outJsonPath = creadorPDF.crearCartaportePDF (inputValues, button_type)
+		outPdfPath, outJsonPath = creadorPDF.createPdfDocument (inputValues, button_type)
 
 		# Respond with the output PDF
 		with open(outPdfPath, 'rb') as pdf_file:
@@ -157,29 +154,15 @@ class CartaporteView (View):
 	#----------------------------------------------------------------
 	def getFieldValuesFromBounds (self, inputValues):
 		jsonFieldsDic = {}
-		gastosDic = {"value": {"ValorFlete":{"value":{}}, 
-		                       "Seguro":{"value":{}}, 
-							   "OtrosGastos":{"value":{}}, 
-							   "Total":{"value":{}}}}
-
 		# Load parameters from package
-		cartaporteParametersForInputs = ResourceLoader.loadJson ("form-cartaporte", "cartaporte_parameters_for_inputs.json")
+		manifiestoParametersForInputs = ResourceLoader.loadJson ("docs", "manifiesto_input_parameters.json")
 
-		for key, params in cartaporteParametersForInputs.items():
+		for key, params in manifiestoParametersForInputs.items():
 			fieldName    = params ["field"]
 			value        = inputValues [key]
-			if "Gastos" in fieldName:
-				res = re.findall ("\w+", fieldName)   #e.g ["ValorFlete", "MontoDestinatario"]
-				tableName, rowName, colName = res [0], res [1], res[2]
-				if value != "":
-					gastosDic ["value"][rowName]["value"][colName] = {"value": value, "content": value}
-			else:
-				jsonFieldsDic [fieldName] = {"value": value, "content": value}
+			jsonFieldsDic [fieldName] = {"value": value, "content": value}
 
-		jsonFieldsDic [tableName] = gastosDic
 		return jsonFieldsDic
-
-
 
 #--------------------------------------------------------------------
 #-- Class for autocomplete options while the user is typing
@@ -188,22 +171,19 @@ class CartaporteView (View):
 from django.db.models import Q
 #from dal import autocomplete
 
-from .models import Empresa
+from .models import Vehiculo
 
-class EmpresaOptionsView (View):
+class VehiculoOptionsView (View):
 	@method_decorator(csrf_protect)
 	def get (self, request, *args, **kwargs):
+		print (">>> In get from VehiculoOptionsView")
 		query = request.GET.get('query', '')
-		options = Empresa.objects.filter (nombre__icontains=query).values()
+		options = Vehiculo.objects.filter (placa__icontains=query).values()
 
 		itemOptions = []
 		for i, option in enumerate (options):
-			itemLine = f"{i}. {option['nombre']}"
-			itemText = "%s\n%s\n%s-%s. %s:%s" % (
-			              option["nombre"], option ["direccion"], 
-						  option ["ciudad"], option ["pais"],
-						  option ["tipoId"], option ["numeroId"])
-
+			itemLine = f"{i}. {option['placa']}"
+			itemText = "%s||%s||%s. %s||%s" % (option["marca"], option["anho"], option["placa"], option ["pais"], option ["chasis"])
 			newOption = {"itemLine" : itemLine, "itemText" : itemText}
 			itemOptions.append (newOption)
 		

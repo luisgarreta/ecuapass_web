@@ -1,9 +1,15 @@
-{% if lista_ultimos_documentos %}
-    <ul>
-    {% for doc in lista_ultimos_documentos %}
-        <li><a href="{% url 'creador:detalle' doc.numero %}">{{ doc.destinatario }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No hay documentos disponibles.</p>
-{% endif %}
+<!-- myapp/templates/myapp/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Index Page</title>
+</head>
+<body>
+    <h1>Proyecto creador de documentos ECUAPASS</h1>
+	 <p><a href="cartaporte">Crear cartaportes</a></p>
+	 <p><a href="manifiesto">Crear manifiestos</a></p>
+
+    <!-- Add more content as needed -->
+</body>
+</html>
+
