@@ -1,1 +1,1 @@
-web: gunicorn 'ecuapass_web.wsgi'
+web: python manage.py migrate && python manage.py collectstatic --no-input && gunicorn ecuapass.wsgi
