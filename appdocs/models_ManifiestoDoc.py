@@ -8,50 +8,17 @@ from ecuapassdocs.ecuapassinfo.ecuapass_utils import Utils
 from ecuapassdocs.ecuapassinfo.ecuapass_info_manifiesto_BYZA import ManifiestoByza
 
 from .models_CartaporteDoc import Cartaporte
+from appusuarios.models import UsuarioEcuapass
+from appdocs.models_Entidades import Vehiculo
 
-#--------------------------------------------------------------------
-# Model Conductor
-#--------------------------------------------------------------------
-class Conductor (models.Model):
-	documento        = models.CharField (max_length=20)
-	nombre           = models.CharField (max_length=50)
-	nacionalidad     = models.CharField (max_length=50)
-	licencia         = models.CharField (max_length=50)
-	fecha_nacimiento = models.CharField (max_length=50)
-
-	class Meta:
-		verbose_name_plural = "Conductores"
-
-	def get_absolute_url(self):
-		"""Returns the url to access a particular genre instance."""
-		return reverse('conductor-detail', args=[str(self.id)])
-
-	def __str__ (self):
-		return f"{self.nombre}"
-
-#--------------------------------------------------------------------
-# Model Vehiculo
-#--------------------------------------------------------------------
-class Vehiculo (models.Model):
-	placa       = models.CharField (max_length=50)
-	marca       = models.CharField (max_length=100)
-	pais        = models.CharField (max_length=20)
-	chasis      = models.CharField (max_length=50)
-	anho        = models.CharField (max_length=20)
-
-	def get_absolute_url(self):
-		"""Returns the url to access a particular language instance."""
-		return reverse('vehiculo-detail', args=[str(self.id)])
-
-	def __str__ (self):
-		return f"{self.marca}, {self.placa}, {self.pais}"
-	
 #--------------------------------------------------------------------
 # Model ManifiestoDoc
 #--------------------------------------------------------------------
 class ManifiestoDoc (models.Model):
 	numero = models.CharField (max_length=20)
 
+	txt0a = models.CharField (max_length=20, null=True)
+	txt01 = models.CharField (max_length=20, null=True)
 	txt00 = models.CharField (max_length=20, null=True)
 	txt01 = models.CharField (max_length=200, null=True)
 	txt02 = models.CharField (max_length=200, null=True)
@@ -84,17 +51,19 @@ class ManifiestoDoc (models.Model):
 	txt25_5 = models.CharField (max_length=200, null=True)
 	txt26 = models.CharField (max_length=200, null=True)
 	txt27 = models.CharField (max_length=200, null=True)
-	txt28 = models.CharField (max_length=200, null=True)
-	txt29 = models.CharField (max_length=200, null=True)
-	txt30 = models.CharField (max_length=200, null=True)
-	txt31 = models.CharField (max_length=200, null=True)
-	txt32_1 = models.CharField (max_length=200, null=True)
-	txt32_2 = models.CharField (max_length=200, null=True)
-	txt32_3 = models.CharField (max_length=200, null=True)
-	txt32_4 = models.CharField (max_length=200, null=True)
-	txt33_1 = models.CharField (max_length=200, null=True)
-	txt33_2 = models.CharField (max_length=200, null=True)
-	txt34 = models.CharField (max_length=200, null=True)
+	#-- Info mercancia (cartaporte, descripcion, ...totales ----
+	txt28 = models.CharField (max_length=200, null=True)    # Cartaporte
+	txt29 = models.CharField (max_length=800, null=True)    # Descripcion
+	txt30 = models.CharField (max_length=200, null=True)    # Cantidad
+	txt31 = models.CharField (max_length=200, null=True)    # Marca
+	txt32_1 = models.CharField (max_length=200, null=True)  # Peso bruto
+	txt32_2 = models.CharField (max_length=200, null=True)  # Peso bruto total
+	txt32_3 = models.CharField (max_length=200, null=True)  # Peso neto
+	txt32_4 = models.CharField (max_length=200, null=True)  # Peso neto total
+	txt33_1 = models.CharField (max_length=200, null=True)  # Otra medida
+	txt33_2 = models.CharField (max_length=200, null=True)  # Otra medida total
+	txt34 = models.CharField (max_length=200, null=True)    # INCOTERMS
+	#------------------------------------------------------------
 	txt35 = models.CharField (max_length=200, null=True)
 	txt36 = models.CharField (max_length=200, null=True)
 	txt37 = models.CharField (max_length=200, null=True)
@@ -109,11 +78,14 @@ class ManifiestoDoc (models.Model):
 # Model Manifiesto
 #--------------------------------------------------------------------
 class Manifiesto (models.Model):
-	numero     = models.CharField (max_length=20)
-	vehiculo   = models.ForeignKey (Vehiculo, on_delete=models.DO_NOTHING, related_name='vehiculo', null=True)
-	documento  = models.OneToOneField (ManifiestoDoc, on_delete=models.DO_NOTHING, null=True)
-	cartaporte = models.ForeignKey(Cartaporte, on_delete=models.RESTRICT, null=True)
+	numero        = models.CharField (max_length=20)
+	vehiculo      = models.ForeignKey (Vehiculo, on_delete=models.SET_NULL, related_name='vehiculo', null=True)
+	cartaporte    = models.ForeignKey (Cartaporte, on_delete=models.SET_NULL, null=True)
+
+	documento     = models.OneToOneField (ManifiestoDoc, on_delete=models.SET_NULL, null=True)
 	fecha_emision = models.DateField (default=date.today)
+	procedimiento = models.CharField (max_length=30)
+	usuario       = models.ForeignKey (UsuarioEcuapass, on_delete=models.SET_NULL, null=True)
 
 	def get_absolute_url(self):
 		"""Returns the url to access a particular language instance."""
@@ -134,13 +106,14 @@ class Manifiesto (models.Model):
 		
 	
 	def getCartaporte (self, manifiestoInfo):
-		numero = None
+		numeroCartaporte = None
 		try:
-			numero = manifiesto.getNumeroCPIC ()
-			record = Cartaporte.objects.get (numero=desired_value)
+			numeroCartaporte = manifiestoInfo.getNumeroCPIC ()
+			record = Cartaporte.objects.get (numero=numeroCartaporte)
 			return record
 		except: 
-			print (f"Exepcion: Cartaporte número '{numero}' no encontrado.")
+			Utils.printException ("Excepcion in getCartaporte")
+			Utils.printException (f"Exepcion: Cartaporte número '{numeroCartaporte}' no encontrado.")
 		return None
 
 		

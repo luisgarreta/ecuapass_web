@@ -1,22 +1,3 @@
-function setParametersToInputs (textAreas, inputParameters, handleInput) {
-	// Set restrictions and styles for each input textarea
-	textAreas.forEach (function (textArea) {
-		const input = inputsParameters [textArea.id];
-		textArea.value = input ["value"]
-		textArea.style.fontSize  = input["fontSize"];
-		textArea.style.textAlign = input ["align"];
-		textArea.style.position = "absolute";
-
-		textArea.style.left   = input ["x"]  + "px";
-		textArea.style.top    = input ["y"]  + "px";
-		textArea.style.width  = input ["width"]  + "px";
-		textArea.style.height = input ["height"] + "px";
-		st = textArea.style
-
-		textArea.addEventListener ('input', handleInput);
-	});
-}
-
 // Control max number of lines and chars according to className
 function handleInput (event) {
 	textArea = event.target;
@@ -59,4 +40,81 @@ function convertToUpperCase (textArea) {
 	// Restore the cursor position
 		textArea.setSelectionRange(start, end);
 }
+
+// Handle the event went user leaves out textareas
+function handleBlur (textareaId, document_type, textAreasDict, textarea) {
+	if (document_type == "cartaporte") {
+		//-- Copy "ciudad-pais. fecha" to other inputs (BYZA)
+		if (textareaId == "txt06") {
+			textAreasDict ["txt07"].value = textAreasDict ["txt06"].value
+			textAreasDict ["txt19"].value = textAreasDict ["txt06"].value
+		}
+		//-- Calculate totals when change gastos table values
+		remitenteInputs = {"txt17_11":"txt17_21","txt17_12":"txt17_22","txt17_13":"txt17_23"}
+		if (Object.keys (remitenteInputs).includes (textareaId)) {
+			if (textarea.value != "")
+				textAreasDict [remitenteInputs [textareaId]].value = "USD"
+
+			setTotal (Object.keys (remitenteInputs), "txt17_14", textAreasDict);
+			textAreasDict ["txt17_24"].value = "USD"
+		}
+
+		destinatarioInputs = {"txt17_31":"txt17_41","txt17_32":"txt17_42","txt17_33":"txt17_43"}
+		if (Object.keys (destinatarioInputs).includes (textareaId)) {
+			if (textarea.value != "")
+				textAreasDict [destinatarioInputs [textareaId]].value = "USD"
+
+			setTotal (Object.keys (destinatarioInputs), "txt17_34", textAreasDict);
+			textAreasDict ["txt17_44"].value = "USD"
+		}
+	}
+}
+
+// Calculates the total of the textArray values and set to txtTotal
+function setTotal (textArray, txtTotal, textAreasDict) {
+	let total = 0.0
+	for (let item of textArray) {
+		text = textAreasDict [item].value
+		if (text != "") {
+			value = parseFloat (textAreasDict [item].value, 10);
+			if (isNaN(value)) {
+				alert ("Por favor ingrese valores numéricos válidos");
+				textAreasDict [item].value = ""
+				return;
+			}
+			total += value
+		}
+	}
+	textAreasDict [txtTotal].value = total; // Use toFixed to format output
+}
+	
+
+// Set restrictions and styles for each input textarea
+function setParametersToInputs (textAreas, inputParameters, document_type) {
+	textAreas.forEach (function (textArea) {
+		const input = inputsParameters [textArea.id];
+		textArea.value = input ["value"]
+		textArea.style.fontSize  = input["fontSize"];
+		textArea.style.textAlign = input ["align"];
+		textArea.style.position = "absolute";
+
+		textArea.style.left   = input ["x"]  + "px";
+		textArea.style.top    = input ["y"]  + "px";
+		textArea.style.width  = input ["width"]  + "px";
+		textArea.style.height = input ["height"] + "px";
+		st = textArea.style
+
+		// Handle input event for autocomplete
+		textArea.addEventListener ('input', handleInput);
+		const textAreasDict = Object.fromEntries(
+  			textAreas.map (textarea => [textarea.id, textarea])
+		);
+
+		// Handle blur event for auto filling
+		textArea.addEventListener ("blur", function (event) {
+			handleBlur (event.target.id, document_type, textAreasDict, this);
+		});
+	});
+}
+
 

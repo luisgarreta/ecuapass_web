@@ -13,7 +13,7 @@ from PIL import Image
 
 # For loading resources
 #from .resourceloader import ResourceLoader 
-from ecuapassdocs.ecuapassutils.resourceloader import ResourceLoader 
+from ecuapassdocs.ecuapassinfo.resourceloader import ResourceLoader 
 
 #----------------------------------------------------------------
 # Crea un documento PDF con background y textos
@@ -23,13 +23,18 @@ class CreadorPDF:
 		self.docType = docType
 		if docType == "manifiesto":
 			self.backgroundPdf = ResourceLoader.loadPdf ("docs", 'manifiesto-vacio-NTA-BYZA.pdf')
-			self.backgroundImg = ResourceLoader.loadImage ("docs", 'manifiesto-vacio-NTA-BYZA.png')
+			self.backgroundImg = ResourceLoader.loadImage ("docs", 'image-manifiesto-vacio-NTA-BYZA.png')
 			self.inputBounds   = ResourceLoader.loadJson ("docs", 'manifiesto_input_parameters.json')
 			self.prefix = "MCI"
 		elif docType == "cartaporte":
 			self.backgroundPdf = ResourceLoader.loadPdf ("docs", 'cartaporte-vacia-SILOG-BYZA.pdf')
-			self.backgroundImg = ResourceLoader.loadImage ("docs", 'cartaporte-vacia-SILOG-BYZA.png')
+			self.backgroundImg = ResourceLoader.loadImage ("docs", 'image-cartaporte-vacia-SILOG-BYZA.png')
 			self.inputBounds   = ResourceLoader.loadJson ("docs", 'cartaporte_input_parameters.json')
+			self.prefix = "CPI"
+		elif docType == "declaracion":
+			self.backgroundPdf = ResourceLoader.loadPdf ("docs", 'declaracion-vacia-NTA.pdf')
+			self.backgroundImg = ResourceLoader.loadImage ("docs", 'image-declaracion-vacia-NTA.png')
+			self.inputBounds   = ResourceLoader.loadJson ("docs", 'declaracion_input_parameters.json')
 			self.prefix = "CPI"
 		else:
 			print (f"Error: Tipo de documento '{docType}' no soportado")
@@ -74,10 +79,9 @@ class CreadorPDF:
 		can = canvas.Canvas(packet)
 
 		for key, params in inputBounds.items():
-			imgBounds = [params["x"]-7, params["y"]-7, params ["width"], params ["height"]]
+			imgBounds = [params["x"], params["y"]-7, params ["width"], params ["height"]]
 			pdfBounds = self.convertToImageToPdfBounds (imgBounds)
 
-			print (">>>", params ["font"])
 			if params ["font"] == "hidden":
 				FONTSIZE = 0
 			elif params ["font"] == "normal":
@@ -85,13 +89,21 @@ class CreadorPDF:
 			elif params ["font"] == "large":
 				FONTSIZE = 16
 			elif params ["font"] == "small":
-				FONTSIZE = 8
-			can.setFont ("Helvetica-Bold", FONTSIZE)
+				FONTSIZE = 7
+			#can.setFont ("Helvetica-Bold", FONTSIZE)
+			can.setFont ("Times-Bold", FONTSIZE)
+
+			#-- Set color to text 
+			if "restrictions" in params.keys ():
+				if any ("color" in x for x in params ["restrictions"]):
+					can.setFillColorRGB (1,0,0)
+				else:
+					can.setFillColorRGB (0,0,0)
 
 			text         = inputValues [key]
 			textLines    = text.split ("\n")
 			for i, line in enumerate (textLines):
-				top = pdfBounds[1] - (i+1)*FONTSIZE
+				top = pdfBounds[1] - (i+1)*FONTSIZE + i+2
 				if params ["align"] == "right":
 					can.drawRightString (pdfBounds[0] + pdfBounds [2], top, line.strip())
 				elif params ["align"] == "center":
@@ -110,7 +122,7 @@ class CreadorPDF:
 	#-- Info is embedded according to Azure format
 	#----------------------------------------------------------------
 	def embedFieldsIntoPDF (self, pdfCanvas, inputBounds, inputValues):
-		if self.docType == "manifiesto":
+		if self.docType == "manifiesto" or self.docType == "declaracion":
 			return self.embedFieldsIntoPDFManifiesto (pdfCanvas, inputBounds, inputValues)
 		elif self.docType == "cartaporte":
 			return self.embedFieldsIntoPDFCartaporte (pdfCanvas, inputBounds, inputValues)
